@@ -1761,20 +1761,25 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ident, key = query.data.split("#")
         settings = await get_settings(query.message.chat.id)
         try:
-            if settings['url_mode'] and not await db.has_prime_status(user):
-                ghost_url = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-                await query.answer(url=ghost_url)
-                return
-            else:
-                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-                return
-        except UserIsBlocked:
-            await query.answer('Unblock the bot baby !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
-        except Exception as e:
-            logger.exception(e)
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
+           if settings['url_mode'] and not await db.has_prime_status(user):
+    try:
+        chat_id = query.message.chat.id  # The bot automatically gets this
+        ghost_url = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+        await query.answer(url=ghost_url)
+        return
+    except UserIsBlocked:
+        await query.answer('Unblock the bot baby!', show_alert=True)
+        return
+    except PeerIdInvalid:
+        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
+        return
+    except Exception as e:
+        logger.exception(e)
+        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
+        return
+else:
+    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+    return
   
     elif query.data.startswith("del"):
         ident, file_id = query.data.split("#")
